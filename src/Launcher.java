@@ -14,9 +14,9 @@ public class Launcher extends Canvas implements Runnable
 {
     public static final float WIDTH = 640.0f;
     public static final float HEIGHT = 480.0f;
-    public String blobVersion;
-    public String miraculousVersion;
-    public String tetrisVersion;
+    public static String blobVersion;
+    public static String miraculousVersion;
+    public static String tetrisVersion;
     public boolean closeOnOpen = false;
     private Thread thread;
     private boolean running;
@@ -27,6 +27,7 @@ public class Launcher extends Canvas implements Runnable
     public static BufferedImage sprite_sheet;
     public static STATE menuState;
     public static int menuStateAsInt;
+    public static BufferedImage blobLogo;
 
     public Launcher() {
         this.running = false;
@@ -40,9 +41,10 @@ public class Launcher extends Canvas implements Runnable
         new Window(1000.0f, 700.0f, "Launcher", this);
         final BufferedImageLoader loader = new BufferedImageLoader();
         //Launcher.sprite_sheet = loader.loadImage("/sprites.png");
+        Launcher.blobLogo = loader.loadImage("/logos/blob.png");
         LauncherLoadSave.ReadFromVersionFile();
         this.r = new Random();
-        checkVersion();
+        Util.checkVersion();
     }
 
     public synchronized void start() {
@@ -57,136 +59,6 @@ public class Launcher extends Canvas implements Runnable
         }
         catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    public void download(String name, String version) {
-        try {
-            URL url = new URL("https://github.com/Sol-angelo/" + name + "/releases/download/v" + version + "/" + name.toLowerCase() + ".jar");
-            File file = LauncherLoadSave.getFileByOS("jars", name.toLowerCase(), "jar");
-            copyURLToFile(url, file);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void checkVersion() {
-        String version = new Source(getTextFromGithub("https://raw.githubusercontent.com/Sol-angelo/SolLauncher/master/version.txt")).getRenderer().toString();
-        String[] versionsep = version.split(" ");
-        if (!Objects.equals(versionsep[0], blobVersion)) {
-            LauncherLoadSave.deleteJarFile("blob");
-            blobVersion = versionsep[0];
-            LauncherLoadSave.WriteToVersionFile();
-            download("Blob", versionsep[0]);
-        }
-        /*if (!Objects.equals(versionsep[1], blobVersion)) {
-            LauncherLoadSave.deleteJarFile("miraculous");
-            download("Miraculous", versionsep[1]);
-        }
-        if (!Objects.equals(versionsep[2], blobVersion)) {
-            LauncherLoadSave.deleteJarFile("tetris");
-            download("Tetris", versionsep[2]);
-        }*/
-        System.out.println(version);
-    }
-
-    public static String getTextFromGithub(String link) {
-        URL Url = null;
-        try {
-            Url = new URL(link);
-        } catch (MalformedURLException e1) {
-            e1.printStackTrace();
-        }
-        HttpURLConnection Http = null;
-        try {
-            Http = (HttpURLConnection) Url.openConnection();
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
-        Map<String, List<String>> Header = Http.getHeaderFields();
-
-        for (String header : Header.get(null)) {
-            if (header.contains(" 302 ") || header.contains(" 301 ")) {
-                link = Header.get("Location").get(0);
-                try {
-                    Url = new URL(link);
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                }
-                try {
-                    Http = (HttpURLConnection) Url.openConnection();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                Header = Http.getHeaderFields();
-            }
-        }
-        InputStream Stream = null;
-        try {
-            Stream = Http.getInputStream();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        String Response = null;
-        try {
-            Response = GetStringFromStream(Stream);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return Response;
-    }
-
-    private static String GetStringFromStream(InputStream Stream) throws IOException {
-        if (Stream != null) {
-            Writer Writer = new StringWriter();
-            PrintWriter pw = new PrintWriter(Writer);
-            char[] Buffer = new char[2048];
-            try {
-                Reader Reader = new BufferedReader(new InputStreamReader(Stream, "UTF-8"));
-                int counter;
-                while ((counter = Reader.read(Buffer)) != -1) {
-                    Writer.write(Buffer, 0, counter);
-                }
-            } finally {
-                Stream.close();
-            }
-            return Writer.toString();
-        } else {
-            return "No Contents";
-        }
-    }
-
-    public static void copyURLToFile(URL url, File file) {
-        try {
-            InputStream input = url.openStream();
-            if (file.exists()) {
-                if (file.isDirectory())
-                    throw new IOException("File '" + file + "' is a directory");
-
-                if (!file.canWrite())
-                    throw new IOException("File '" + file + "' cannot be written");
-            } else {
-                File parent = file.getParentFile();
-                if ((parent != null) && (!parent.exists()) && (!parent.mkdirs())) {
-                    throw new IOException("File '" + file + "' could not be created");
-                }
-            }
-
-            FileOutputStream output = new FileOutputStream(file);
-
-            byte[] buffer = new byte[4096];
-            int n = 0;
-            while (-1 != (n = input.read(buffer))) {
-                output.write(buffer, 0, n);
-            }
-
-            input.close();
-            output.close();
-
-            System.out.println("File '" + file + "' downloaded successfully!");
-        }
-        catch(IOException ioEx) {
-            ioEx.printStackTrace();
         }
     }
     
@@ -242,15 +114,6 @@ public class Launcher extends Canvas implements Runnable
         }
         g.dispose();
         bs.show();
-    }
-
-    public static Process exec(File file) throws IOException {
-        String javaHome = System.getProperty("java.home");
-        String javaBin = javaHome +
-                File.separator + "bin" +
-                File.separator + "java";
-        ProcessBuilder pb = new ProcessBuilder(javaBin, "-jar", file.toString());
-        return pb.start();
     }
 
     public static void drawThickRect(Graphics g, int x, int y, int width, int height, int thickness) {

@@ -1,6 +1,8 @@
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.Random;
 
@@ -32,7 +34,15 @@ public class Menu extends MouseAdapter
                     System.out.println("pressed");
                     try {
                         System.out.println("tried");
-                        Launcher.exec(LauncherLoadSave.getFileByOS("jars", "blob", "jar"));
+                        File file = LauncherLoadSave.getFileByOS("jars", "blob", "jar");
+                        if (file.exists()) {
+                            Util.exec(file);
+                        } else {
+                            Util.download("blob", Util.getLatestVersion("blob"));
+                            Launcher.blobVersion = Util.getLatestVersion("blob");
+                            LauncherLoadSave.WriteToVersionFile();
+                            //Util.exec(file);
+                        }
                         if (launcher.closeOnOpen) {
                             System.exit(2);
                         }
@@ -45,7 +55,7 @@ public class Menu extends MouseAdapter
                     System.out.println("pressed m");
                     try {
                         System.out.println("tried m");
-                        Launcher.exec(LauncherLoadSave.getFileByOS("jars", "miraculous", "jar"));
+                        Util.exec(LauncherLoadSave.getFileByOS("jars", "miraculous", "jar"));
                         if (launcher.closeOnOpen) {
                             System.exit(2);
                         }
@@ -58,7 +68,7 @@ public class Menu extends MouseAdapter
                     System.out.println("pressed t");
                     try {
                         System.out.println("tried t");
-                        Launcher.exec(LauncherLoadSave.getFileByOS("jars", "tetris", "jar"));
+                        Util.exec(LauncherLoadSave.getFileByOS("jars", "tetris", "jar"));
                         if (launcher.closeOnOpen) {
                             System.exit(2);
                         }
@@ -66,12 +76,13 @@ public class Menu extends MouseAdapter
                         System.out.println("failed");
                         throw new RuntimeException(ex);
                     }
-                } if (clicked[3]) {
-                    if (this.mouseOver(mx, my, 350, 174, 32, 16)) {
-                        System.out.println("close on open pressed");
-                        launcher.closeOnOpen = !launcher.closeOnOpen;
-                        LauncherLoadSave.WriteToSettingsFile();
-                    }
+                }
+            }
+            if (clicked[3]) {
+                if (this.mouseOver(mx, my, 450, 174, 32, 16)) {
+                    System.out.println("close on open pressed");
+                    launcher.closeOnOpen = !launcher.closeOnOpen;
+                    LauncherLoadSave.WriteToSettingsFile();
                 }
             }
             if (this.mouseOver(mx, my, 0, 100, 198, 100)) {
@@ -136,7 +147,7 @@ public class Menu extends MouseAdapter
                 g.setColor(new Color(33, 33, 33));
                 g.drawString("Blob", 250, 90);
                 g.setFont(fnt2);
-                g.drawString("Play", 410, 350);
+                g.drawString("Play", 465, 350);
                 g.drawString("Version "+launcher.blobVersion, 700, 90);
             }
             if (clicked[1]) {
@@ -149,7 +160,7 @@ public class Menu extends MouseAdapter
                 g.setColor(new Color(33, 33, 33));
                 g.drawString("Miraculous", 250, 90);
                 g.setFont(fnt2);
-                g.drawString("Play", 410, 350);
+                g.drawString("Play", 465, 350);
                 g.drawString("Version "+launcher.miraculousVersion, 700, 90);
             }
             if (clicked[2]) {
@@ -162,27 +173,31 @@ public class Menu extends MouseAdapter
                 g.setColor(new Color(33, 33, 33));
                 g.drawString("Tetris", 250, 90);
                 g.setFont(fnt2);
-                g.drawString("Play", 410, 350);
+                g.drawString("Play", 465, 350);
                 g.drawString("Version "+launcher.tetrisVersion, 700, 90);
             }
             if (clicked[3]) {
                 g.setColor(new Color(119, 119, 119));
                 g.fillRect(0,0,198,100);
                 g.setColor(new Color(77, 77, 77));
+                g.fillRect(250, 150, 240, 64);
                 Launcher.drawThickRect(g,-2, 0, 200, 102, 3);
-                g.setColor(Color.white);
+                g.setColor(new Color(33, 33, 33));
+                g.setFont(fnt);
+                g.drawString("Settings", 250, 90);
                 g.setFont(fnt3);
-                g.drawString("Close on Launch", 160, 190);
-                g.drawRect(350, 174, 32, 16);
-                g.drawRect(150, 150, 240, 64);
+                g.drawString("Close on Launch", 260, 190);
+                g.drawRect(450, 174, 32, 16);
+                g.drawRect(250, 150, 240, 64);
                 if (launcher.closeOnOpen) {
                     g.setColor(new Color(45, 225, 50));
-                    g.fillRect(351, 175, 15, 14);
+                    g.fillRect(451, 175, 15, 14);
                 } else {
                     g.setColor(new Color(215, 65, 31));
-                    g.fillRect(366, 175, 15, 14);
+                    g.fillRect(466, 175, 15, 14);
                 }
             }
+            g.drawImage(Launcher.blobLogo, 60, 118, null);
         } else if (Launcher.menuState == Launcher.STATE.Saveload) {
             g.setFont(fnt2);
             g.setColor(Color.white);

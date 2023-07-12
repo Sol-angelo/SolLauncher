@@ -4,6 +4,7 @@
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Objects;
 
 public class BufferedImageLoader
 {
@@ -12,8 +13,7 @@ public class BufferedImageLoader
     public BufferedImage loadImage(final String path) {
         try {
             this.image = ImageIO.read(this.getClass().getResource(path));
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return this.image;

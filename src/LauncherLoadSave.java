@@ -29,6 +29,24 @@ public class LauncherLoadSave {
         return null;
     }
 
+    public static File getFolderByOS(String addpath, String name) {
+        String osname = System.getProperty("os.name");
+        if (osname.contains("Mac")) {
+            Path path = Path.of(System.getProperty("user.home"), "Library", "Application Support", "Solangelo", "Launcher");
+            File path2 = new File(path + "/" + addpath);
+            path2.mkdirs();
+            File txt = new File(path2 + "/"+name);
+            return txt;
+        } else if (osname.contains("Window")) {
+            Path path = Path.of(System.getProperty("user.home"), "AppData", "Solangelo", "Launcher");
+            File path2 = new File(path + "/" + addpath);
+            path2.mkdirs();
+            File txt = new File(path2 + "/"+name);
+            return txt;
+        }
+        return null;
+    }
+
     public static void ReadFromVersionFile() {
         File txtFile = getFileByOS("data", "version", "txt");
         if (txtFile.exists()) {
@@ -74,9 +92,9 @@ public class LauncherLoadSave {
         }
         try {
             PrintWriter pw = new PrintWriter(txtFile);
-            pw.write(launcher.blobVersion);
-            pw.write(launcher.miraculousVersion);
-            pw.write(launcher.tetrisVersion);
+            pw.println(Launcher.blobVersion);
+            pw.println(Launcher.miraculousVersion);
+            pw.println(Launcher.tetrisVersion);
             pw.close();
 
         } catch (FileNotFoundException e) {
