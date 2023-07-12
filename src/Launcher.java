@@ -1,12 +1,14 @@
+import net.htmlparser.jericho.Source;
+
 import java.awt.*;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+import java.util.*;
+import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.List;
 
 public class Launcher extends Canvas implements Runnable
 {
@@ -40,14 +42,15 @@ public class Launcher extends Canvas implements Runnable
         //Launcher.sprite_sheet = loader.loadImage("/sprites.png");
         LauncherLoadSave.ReadFromVersionFile();
         this.r = new Random();
-        //download("Blob", "0.1.1");
+        checkVersion();
+        download("Blob", "0.1.1");
     }
-    
+
     public synchronized void start() {
         (this.thread = new Thread(this)).start();
         this.running = true;
     }
-    
+
     public synchronized void stop() {
         try {
             this.thread.join();
@@ -61,23 +64,125 @@ public class Launcher extends Canvas implements Runnable
     public void download(String name, String version) {
         try {
             URL url = new URL("https://github.com/Sol-angelo/" + name + "/releases/download/v" + version + "/" + name.toLowerCase() + ".jar");
-            url.openConnection();
-            System.out.println("connected");
+            File file = LauncherLoadSave.getFileByOS("jars", name.toLowerCase(), "jar");
+            copyURLToFile(url, file);
         } catch (MalformedURLException e) {
             e.printStackTrace();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 
     public void checkVersion() {
+        String version = new Source(getTextFromGithub("https://raw.githubusercontent.com/Sol-angelo/SolLauncher/master/version.txt")).getRenderer().toString();
+        String[] versionsep = version.split(" ");
+        if (!Objects.equals(versionsep[0], blobVersion)) {
+            download("Blob", versionsep[0]);
+        }
+        if (!Objects.equals(versionsep[1], blobVersion)) {
+            download("Miraculous", versionsep[1]);
+        }
+        if (!Objects.equals(versionsep[2], blobVersion)) {
+            download("Tetris", versionsep[2]);
+        }
+        System.out.println(version);
+    }
+
+    public static String getTextFromGithub(String link) {
+        URL Url = null;
         try {
-            URL url = new URL("http://www.puzzlers.org/pub/wordlists/pocket.txt");
-            Scanner s = new Scanner(url.openStream());
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
+            Url = new URL(link);
+        } catch (MalformedURLException e1) {
+            e1.printStackTrace();
+        }
+        HttpURLConnection Http = null;
+        try {
+            Http = (HttpURLConnection) Url.openConnection();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+        Map<String, List<String>> Header = Http.getHeaderFields();
+
+        for (String header : Header.get(null)) {
+            if (header.contains(" 302 ") || header.contains(" 301 ")) {
+                link = Header.get("Location").get(0);
+                try {
+                    Url = new URL(link);
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    Http = (HttpURLConnection) Url.openConnection();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                Header = Http.getHeaderFields();
+            }
+        }
+        InputStream Stream = null;
+        try {
+            Stream = Http.getInputStream();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+        }
+        String Response = null;
+        try {
+            Response = GetStringFromStream(Stream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return Response;
+    }
+
+    private static String GetStringFromStream(InputStream Stream) throws IOException {
+        if (Stream != null) {
+            Writer Writer = new StringWriter();
+            PrintWriter pw = new PrintWriter(Writer);
+            char[] Buffer = new char[2048];
+            try {
+                Reader Reader = new BufferedReader(new InputStreamReader(Stream, "UTF-8"));
+                int counter;
+                while ((counter = Reader.read(Buffer)) != -1) {
+                    Writer.write(Buffer, 0, counter);
+                }
+            } finally {
+                Stream.close();
+            }
+            return Writer.toString();
+        } else {
+            return "No Contents";
+        }
+    }
+
+    public static void copyURLToFile(URL url, File file) {
+        try {
+            InputStream input = url.openStream();
+            if (file.exists()) {
+                if (file.isDirectory())
+                    throw new IOException("File '" + file + "' is a directory");
+
+                if (!file.canWrite())
+                    throw new IOException("File '" + file + "' cannot be written");
+            } else {
+                File parent = file.getParentFile();
+                if ((parent != null) && (!parent.exists()) && (!parent.mkdirs())) {
+                    throw new IOException("File '" + file + "' could not be created");
+                }
+            }
+
+            FileOutputStream output = new FileOutputStream(file);
+
+            byte[] buffer = new byte[4096];
+            int n = 0;
+            while (-1 != (n = input.read(buffer))) {
+                output.write(buffer, 0, n);
+            }
+
+            input.close();
+            output.close();
+
+            System.out.println("File '" + file + "' downloaded successfully!");
+        }
+        catch(IOException ioEx) {
+            ioEx.printStackTrace();
         }
     }
     

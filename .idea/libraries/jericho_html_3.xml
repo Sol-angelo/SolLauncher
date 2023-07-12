@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="jericho-html-3">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/../jericho-html-3.4/classes" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="file://$PROJECT_DIR$/../jericho-html-3.4/docs/javadoc" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../jericho-html-3.4/samples/console/src" />
+      <root url="file://$PROJECT_DIR$/../jericho-html-3.4/src/java" />
+      <root url="file://$PROJECT_DIR$/../jericho-html-3.4/test/src" />
+    </SOURCES>
+  </library>
+</component>
