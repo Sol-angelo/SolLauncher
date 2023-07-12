@@ -43,7 +43,6 @@ public class Launcher extends Canvas implements Runnable
         LauncherLoadSave.ReadFromVersionFile();
         this.r = new Random();
         checkVersion();
-        download("Blob", "0.1.1");
     }
 
     public synchronized void start() {
@@ -75,14 +74,19 @@ public class Launcher extends Canvas implements Runnable
         String version = new Source(getTextFromGithub("https://raw.githubusercontent.com/Sol-angelo/SolLauncher/master/version.txt")).getRenderer().toString();
         String[] versionsep = version.split(" ");
         if (!Objects.equals(versionsep[0], blobVersion)) {
+            LauncherLoadSave.deleteJarFile("blob");
+            blobVersion = versionsep[0];
+            LauncherLoadSave.WriteToVersionFile();
             download("Blob", versionsep[0]);
         }
-        if (!Objects.equals(versionsep[1], blobVersion)) {
+        /*if (!Objects.equals(versionsep[1], blobVersion)) {
+            LauncherLoadSave.deleteJarFile("miraculous");
             download("Miraculous", versionsep[1]);
         }
         if (!Objects.equals(versionsep[2], blobVersion)) {
+            LauncherLoadSave.deleteJarFile("tetris");
             download("Tetris", versionsep[2]);
-        }
+        }*/
         System.out.println(version);
     }
 

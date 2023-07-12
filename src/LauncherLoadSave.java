@@ -65,6 +65,25 @@ public class LauncherLoadSave {
         }
     }
 
+    public static void WriteToVersionFile() {
+        File txtFile = getFileByOS("data", "version", "txt");
+        try {
+            txtFile.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            PrintWriter pw = new PrintWriter(txtFile);
+            pw.write(launcher.blobVersion);
+            pw.write(launcher.miraculousVersion);
+            pw.write(launcher.tetrisVersion);
+            pw.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void WriteToSettingsFile() {
         File txtFile = getFileByOS("data", "settings", "txt");
         try {
@@ -82,4 +101,10 @@ public class LauncherLoadSave {
         }
     }
 
+    public static void deleteJarFile(String name) {
+        File txtFile = getFileByOS("jars", name, "jar");
+        if (txtFile.exists()) {
+            txtFile.delete();
+        }
+    }
 }
