@@ -1,9 +1,17 @@
 import net.htmlparser.jericho.Source;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +20,11 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class Util {
+
+    public static final String key = "cayden is slayer";
+
+    private static final String ALGORITHM = "AES";
+    private static final String TRANSFORMATION = "AES";
 
     private static void unzip(String zipFilePath, String destDir) {
         File dir = new File(destDir);
@@ -55,15 +68,6 @@ public class Util {
             URL url = new URL("https://github.com/Sol-angelo/" + name + "/releases/download/v" + version + "/" + name.toLowerCase() + ".jar");
             File file = LauncherLoadSave.getFileByOS("jars", name.toLowerCase(), "jar");
             copyURLToFile(url, file);
-            /*File metaINF = LauncherLoadSave.getFolderByOS("jars", "META-INF");
-            if (metaINF.exists() &&  metaINF.isDirectory()) {
-                for (File file1 : metaINF.listFiles()) {
-                    file1.delete();
-                }
-                metaINF.delete();
-            }
-            unzip(file.getPath(), file.getParentFile().toString());
-            file.delete();*/
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -77,19 +81,19 @@ public class Util {
         if (!Objects.equals(versionsep[0], Launcher.blobVersion)) {
             LauncherLoadSave.deleteJarFile("blob");
             Launcher.blobVersion = versionsep[0];
-            LauncherLoadSave.WriteToVersionFile();
+            LauncherLoadSave.writeToVersionFile();
             download("Blob", versionsep[0]);
         }
         if (!Objects.equals(versionsep[1], Launcher.miraculousVersion)) {
             LauncherLoadSave.deleteJarFile("miraculous");
             Launcher.miraculousVersion = versionsep[1];
-            LauncherLoadSave.WriteToVersionFile();
+            LauncherLoadSave.writeToVersionFile();
             download("Miraculous", versionsep[1]);
         }
         if (!Objects.equals(versionsep[2], Launcher.tetrisVersion)) {
             LauncherLoadSave.deleteJarFile("tetris");
             Launcher.tetrisVersion = versionsep[2];
-            LauncherLoadSave.WriteToVersionFile();
+            LauncherLoadSave.writeToVersionFile();
             download("Tetris", versionsep[2]);
         }
     }
@@ -156,7 +160,6 @@ public class Util {
     private static String GetStringFromStream(InputStream Stream) throws IOException {
         if (Stream != null) {
             Writer Writer = new StringWriter();
-            PrintWriter pw = new PrintWriter(Writer);
             char[] Buffer = new char[2048];
             try {
                 Reader Reader = new BufferedReader(new InputStreamReader(Stream, "UTF-8"));
@@ -214,5 +217,39 @@ public class Util {
                 File.separator + "java";
         ProcessBuilder pb = new ProcessBuilder(javaBin, "-jar", file.toString());
         pb.start();
+    }
+
+    public static void encrypt(String key, File inputFile, File outputFile)
+            throws CryptoException {
+        doCrypto(Cipher.ENCRYPT_MODE, key, inputFile, outputFile);
+    }
+
+    public static void decrypt(String key, File inputFile, File outputFile)
+            throws CryptoException {
+        doCrypto(Cipher.DECRYPT_MODE, key, inputFile, outputFile);
+    }
+
+    private static void doCrypto(int cipherMode, String key, File inputFile, File outputFile) throws CryptoException {
+        try {
+            Key secretKey = new SecretKeySpec(key.getBytes(), ALGORITHM);
+            Cipher cipher = Cipher.getInstance(TRANSFORMATION);
+            cipher.init(cipherMode, secretKey);
+
+            FileInputStream inputStream = new FileInputStream(inputFile);
+            byte[] inputBytes = new byte[(int) inputFile.length()];
+            inputStream.read(inputBytes);
+
+            byte[] outputBytes = cipher.doFinal(inputBytes);
+
+            FileOutputStream outputStream = new FileOutputStream(outputFile);
+            outputStream.write(outputBytes);
+
+            inputStream.close();
+            outputStream.close();
+            inputFile.delete();
+        } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | BadPaddingException |
+                 IllegalBlockSizeException | IOException ex) {
+            throw new CryptoException("Error encrypting/decrypting file", ex);
+        }
     }
 }

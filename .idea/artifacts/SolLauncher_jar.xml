@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="SolLauncher:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/SolLauncher_jar</output-path>
+    <root id="archive" name="SolLauncher.jar">
+      <element id="module-output" name="SolLauncher" />
+      <element id="library" level="project" name="jericho-html-3" />
+    </root>
+  </artifact>
+</component>

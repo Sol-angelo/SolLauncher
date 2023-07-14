@@ -24,7 +24,6 @@ public class Launcher extends Canvas implements Runnable
     private Handler handler;
     private Menu menu;
     private LauncherLoadSave loadSave;
-    public static BufferedImage sprite_sheet;
     public static STATE menuState;
     public static int menuStateAsInt;
     public static BufferedImage blobLogo;
@@ -34,15 +33,14 @@ public class Launcher extends Canvas implements Runnable
         menuState = STATE.Menu;
         this.handler = new Handler(this);
         this.loadSave = new LauncherLoadSave(this);
-        LauncherLoadSave.ReadFromSettingsFile();
+        LauncherLoadSave.readFromSettingsFile();
         this.menu = new Menu(this, this.handler, this.loadSave);
         this.addKeyListener(new KeyInput(this.handler, this));
         this.addMouseListener(this.menu);
         new Window(1000.0f, 700.0f, "Launcher", this);
         final BufferedImageLoader loader = new BufferedImageLoader();
-        //Launcher.sprite_sheet = loader.loadImage("/sprites.png");
         Launcher.blobLogo = loader.loadImage("/logos/blob.png");
-        LauncherLoadSave.ReadFromVersionFile();
+        LauncherLoadSave.readFromVersionFile();
         this.r = new Random();
         Util.checkVersion();
     }

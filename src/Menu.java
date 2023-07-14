@@ -40,8 +40,8 @@ public class Menu extends MouseAdapter
                         } else {
                             Util.download("blob", Util.getLatestVersion("blob"));
                             Launcher.blobVersion = Util.getLatestVersion("blob");
-                            LauncherLoadSave.WriteToVersionFile();
-                            //Util.exec(file);
+                            LauncherLoadSave.writeToVersionFile();
+                            Util.exec(file);
                         }
                         if (launcher.closeOnOpen) {
                             System.exit(2);
@@ -54,8 +54,16 @@ public class Menu extends MouseAdapter
                 if (clicked[1]) {
                     System.out.println("pressed m");
                     try {
-                        System.out.println("tried m");
-                        Util.exec(LauncherLoadSave.getFileByOS("jars", "miraculous", "jar"));
+                        System.out.println("tried");
+                        File file = LauncherLoadSave.getFileByOS("jars", "miraculous", "jar");
+                        if (file.exists()) {
+                            Util.exec(file);
+                        } else {
+                            Util.download("miraculous", Util.getLatestVersion("miraculous"));
+                            Launcher.miraculousVersion = Util.getLatestVersion("miraculous");
+                            LauncherLoadSave.writeToVersionFile();
+                            Util.exec(file);
+                        }
                         if (launcher.closeOnOpen) {
                             System.exit(2);
                         }
@@ -68,7 +76,15 @@ public class Menu extends MouseAdapter
                     System.out.println("pressed t");
                     try {
                         System.out.println("tried t");
-                        Util.exec(LauncherLoadSave.getFileByOS("jars", "tetris", "jar"));
+                        File file = LauncherLoadSave.getFileByOS("jars", "tetris", "jar");
+                        if (file.exists()) {
+                            Util.exec(file);
+                        } else {
+                            Util.download("tetris", Util.getLatestVersion("tetris"));
+                            Launcher.tetrisVersion = Util.getLatestVersion("tetris");
+                            LauncherLoadSave.writeToVersionFile();
+                            Util.exec(file);
+                        }
                         if (launcher.closeOnOpen) {
                             System.exit(2);
                         }
@@ -82,7 +98,7 @@ public class Menu extends MouseAdapter
                 if (this.mouseOver(mx, my, 450, 174, 32, 16)) {
                     System.out.println("close on open pressed");
                     launcher.closeOnOpen = !launcher.closeOnOpen;
-                    LauncherLoadSave.WriteToSettingsFile();
+                    LauncherLoadSave.writeToSettingsFile();
                 }
             }
             if (this.mouseOver(mx, my, 0, 100, 198, 100)) {
