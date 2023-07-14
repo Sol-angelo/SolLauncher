@@ -9,6 +9,7 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
@@ -66,7 +67,7 @@ public class Util {
     public static void download(String name, String version) {
         try {
             URL url = new URL("https://github.com/Sol-angelo/" + name + "/releases/download/v" + version + "/" + name.toLowerCase() + ".jar");
-            File file = LauncherLoadSave.getFileByOS("jars", name.toLowerCase(), "jar");
+            File file = Util.getFileByOS("jars", name.toLowerCase(), "jar");
             copyURLToFile(url, file);
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -251,5 +252,59 @@ public class Util {
                  IllegalBlockSizeException | IOException ex) {
             throw new CryptoException("Error encrypting/decrypting file", ex);
         }
+    }
+
+    public static File getFileByOS(String addpath, String name, String fileType) {
+        String osname = System.getProperty("os.name");
+        if (osname.contains("Mac")) {
+            Path path = Path.of(System.getProperty("user.home"), "Library", "Application Support", "Solangelo", "Launcher");
+            File path2 = new File(path + "/" + addpath);
+            path2.mkdirs();
+            File txt = new File(path2 + "/"+name+"."+fileType);
+            return txt;
+        } else if (osname.contains("Window")) {
+            Path path = Path.of(System.getProperty("user.home"), "AppData", "Solangelo", "Launcher");
+            File path2 = new File(path + "/" + addpath);
+            path2.mkdirs();
+            File txt = new File(path2 + "/"+name+"."+fileType);
+            return txt;
+        }
+        return null;
+    }
+
+    public static File getEncryptedByOS(String addpath, String name) {
+        String osname = System.getProperty("os.name");
+        if (osname.contains("Mac")) {
+            Path path = Path.of(System.getProperty("user.home"), "Library", "Application Support", "Solangelo", "Launcher");
+            File path2 = new File(path + "/" + addpath);
+            path2.mkdirs();
+            File txt = new File(path2 + "/"+name+".sexinthecorridor");
+            return txt;
+        } else if (osname.contains("Window")) {
+            Path path = Path.of(System.getProperty("user.home"), "AppData", "Solangelo", "Launcher");
+            File path2 = new File(path + "/" + addpath);
+            path2.mkdirs();
+            File txt = new File(path2 + "/"+name+".sexinthecorridor");
+            return txt;
+        }
+        return null;
+    }
+
+    public static File getFolderByOS(String addpath, String name) {
+        String osname = System.getProperty("os.name");
+        if (osname.contains("Mac")) {
+            Path path = Path.of(System.getProperty("user.home"), "Library", "Application Support", "Solangelo", "Launcher");
+            File path2 = new File(path + "/" + addpath);
+            path2.mkdirs();
+            File txt = new File(path2 + "/"+name);
+            return txt;
+        } else if (osname.contains("Window")) {
+            Path path = Path.of(System.getProperty("user.home"), "AppData", "Solangelo", "Launcher");
+            File path2 = new File(path + "/" + addpath);
+            path2.mkdirs();
+            File txt = new File(path2 + "/"+name);
+            return txt;
+        }
+        return null;
     }
 }

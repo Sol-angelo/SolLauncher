@@ -34,7 +34,7 @@ public class Menu extends MouseAdapter
                     System.out.println("pressed");
                     try {
                         System.out.println("tried");
-                        File file = LauncherLoadSave.getFileByOS("jars", "blob", "jar");
+                        File file = Util.getFileByOS("jars", "blob", "jar");
                         if (file.exists()) {
                             Util.exec(file);
                         } else {
@@ -55,7 +55,7 @@ public class Menu extends MouseAdapter
                     System.out.println("pressed m");
                     try {
                         System.out.println("tried");
-                        File file = LauncherLoadSave.getFileByOS("jars", "miraculous", "jar");
+                        File file = Util.getFileByOS("jars", "miraculous", "jar");
                         if (file.exists()) {
                             Util.exec(file);
                         } else {
@@ -76,7 +76,7 @@ public class Menu extends MouseAdapter
                     System.out.println("pressed t");
                     try {
                         System.out.println("tried t");
-                        File file = LauncherLoadSave.getFileByOS("jars", "tetris", "jar");
+                        File file = Util.getFileByOS("jars", "tetris", "jar");
                         if (file.exists()) {
                             Util.exec(file);
                         } else {

@@ -11,63 +11,9 @@ public class LauncherLoadSave {
         this.launcher = launcher;
     }
 
-    public static File getFileByOS(String addpath, String name, String fileType) {
-        String osname = System.getProperty("os.name");
-        if (osname.contains("Mac")) {
-            Path path = Path.of(System.getProperty("user.home"), "Library", "Application Support", "Solangelo", "Launcher");
-            File path2 = new File(path + "/" + addpath);
-            path2.mkdirs();
-            File txt = new File(path2 + "/"+name+"."+fileType);
-            return txt;
-        } else if (osname.contains("Window")) {
-            Path path = Path.of(System.getProperty("user.home"), "AppData", "Solangelo", "Launcher");
-            File path2 = new File(path + "/" + addpath);
-            path2.mkdirs();
-            File txt = new File(path2 + "/"+name+"."+fileType);
-            return txt;
-        }
-        return null;
-    }
-
-    public static File getEncryptedByOS(String addpath, String name) {
-        String osname = System.getProperty("os.name");
-        if (osname.contains("Mac")) {
-            Path path = Path.of(System.getProperty("user.home"), "Library", "Application Support", "Solangelo", "Launcher");
-            File path2 = new File(path + "/" + addpath);
-            path2.mkdirs();
-            File txt = new File(path2 + "/"+name+".sexinthecorridor");
-            return txt;
-        } else if (osname.contains("Window")) {
-            Path path = Path.of(System.getProperty("user.home"), "AppData", "Solangelo", "Launcher");
-            File path2 = new File(path + "/" + addpath);
-            path2.mkdirs();
-            File txt = new File(path2 + "/"+name+".sexinthecorridor");
-            return txt;
-        }
-        return null;
-    }
-
-    public static File getFolderByOS(String addpath, String name) {
-        String osname = System.getProperty("os.name");
-        if (osname.contains("Mac")) {
-            Path path = Path.of(System.getProperty("user.home"), "Library", "Application Support", "Solangelo", "Launcher");
-            File path2 = new File(path + "/" + addpath);
-            path2.mkdirs();
-            File txt = new File(path2 + "/"+name);
-            return txt;
-        } else if (osname.contains("Window")) {
-            Path path = Path.of(System.getProperty("user.home"), "AppData", "Solangelo", "Launcher");
-            File path2 = new File(path + "/" + addpath);
-            path2.mkdirs();
-            File txt = new File(path2 + "/"+name);
-            return txt;
-        }
-        return null;
-    }
-
     public static void readFromVersionFile() {
-        File txtFile = getFileByOS("data", "version", "txt");
-        File eFile = getEncryptedByOS("data", "version");
+        File txtFile = Util.getFileByOS("data", "version", "txt");
+        File eFile = Util.getEncryptedByOS("data", "version");
         if (eFile.exists()) {
             try {
                 Util.decrypt(Util.key, eFile, txtFile);
@@ -86,8 +32,8 @@ public class LauncherLoadSave {
     }
 
     public static void readFromSettingsFile() {
-        File txtFile = getFileByOS("data", "settings", "txt");
-        File eFile = getEncryptedByOS("data", "settings");
+        File txtFile = Util.getFileByOS("data", "settings", "txt");
+        File eFile = Util.getEncryptedByOS("data", "settings");
         if (eFile.exists()) {
             try {
                 Util.decrypt(Util.key, eFile, txtFile);
@@ -106,8 +52,8 @@ public class LauncherLoadSave {
     }
 
     public static void writeToVersionFile() {
-        File txtFile = getFileByOS("data", "version", "txt");
-        File eFile = getEncryptedByOS("data", "version");
+        File txtFile = Util.getFileByOS("data", "version", "txt");
+        File eFile = Util.getEncryptedByOS("data", "version");
         try {
             txtFile.createNewFile();
         } catch (IOException e) {
@@ -126,8 +72,8 @@ public class LauncherLoadSave {
     }
 
     public static void writeToSettingsFile() {
-        File txtFile = getFileByOS("data", "settings", "txt");
-        File eFile = getEncryptedByOS("data", "settings");
+        File txtFile = Util.getFileByOS("data", "settings", "txt");
+        File eFile = Util.getEncryptedByOS("data", "settings");
         try {
             txtFile.createNewFile();
         } catch (IOException e) {
@@ -144,7 +90,7 @@ public class LauncherLoadSave {
     }
 
     public static void deleteJarFile(String name) {
-        File txtFile = getFileByOS("jars", name, "jar");
+        File txtFile = Util.getFileByOS("jars", name, "jar");
         if (txtFile.exists()) {
             txtFile.delete();
         }
