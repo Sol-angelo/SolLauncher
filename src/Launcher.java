@@ -27,6 +27,8 @@ public class Launcher extends Canvas implements Runnable
     public static STATE menuState;
     public static int menuStateAsInt;
     public static BufferedImage blobLogo;
+    public static BufferedImage miraculousLogo;
+    public static BufferedImage tetrisLogo;
 
     public Launcher() {
         this.running = false;
@@ -40,6 +42,8 @@ public class Launcher extends Canvas implements Runnable
         new Window(1000.0f, 700.0f, "Launcher", this);
         final BufferedImageLoader loader = new BufferedImageLoader();
         Launcher.blobLogo = loader.loadImage("/logos/blob.png");
+        Launcher.miraculousLogo = loader.loadImage("/logos/miraculous.png");
+        Launcher.tetrisLogo = loader.loadImage("/logos/tetris.png");
         LauncherLoadSave.readFromVersionFile();
         this.r = new Random();
         Util.checkVersion();

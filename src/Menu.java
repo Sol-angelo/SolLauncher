@@ -214,6 +214,8 @@ public class Menu extends MouseAdapter
                 }
             }
             g.drawImage(Launcher.blobLogo, 60, 118, null);
+            g.drawImage(Launcher.miraculousLogo, 60, 218, 64, 64, null);
+            g.drawImage(Launcher.tetrisLogo, 60, 318, 64, 64, null);
         } else if (Launcher.menuState == Launcher.STATE.Saveload) {
             g.setFont(fnt2);
             g.setColor(Color.white);
